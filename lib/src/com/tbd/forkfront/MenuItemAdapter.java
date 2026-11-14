@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +74,7 @@ public class MenuItemAdapter extends ArrayAdapter<MenuItem>
 		{
 			if(item.isHeader())
 			{
-				v.setBackgroundColor(Color.WHITE);
+				v.setBackgroundColor(0xffeaeaea);
 				if(mHow == MenuSelectMode.PickMany)
 					v.setMinimumHeight(clickableHeaderMinH);
 				else
@@ -90,6 +91,13 @@ public class MenuItemAdapter extends ArrayAdapter<MenuItem>
 
 			TextView tt = (TextView)v.findViewById(R.id.item_text);
 			tt.setText(item.getText());
+			if(item.isHeader()) {
+				tt.setTypeface(Typeface.SANS_SERIF, Typeface.BOLD);
+				tt.setTextColor(0xff000000);
+			} else {
+				tt.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
+				tt.setTextColor(mContext.getResources().getColorStateList(R.color.menu_item_text_selector));
+			}
 
 			TextView at = (TextView)v.findViewById(R.id.item_acc);
 			if(item.isHeader()) {

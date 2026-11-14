@@ -26,15 +26,15 @@ public class TextAttr
 			return new SpannedString(str);
 
 		if( (attr & ATTR_INVERSE) != 0 )
-			return style(str, attr, Color.WHITE);
+			return style(str, attr, Color.BLACK);
 
 		if( (attr & ATTR_DIM) != 0 )
-			return style(str, attr, Color.GRAY);
+			return style(str, attr, 0xFF555555);
 
 		if( (attr & ATTR_BLINK) != 0 )
 			return style(str, attr, 0xFFF88017);
 
-		return style(str, attr, Color.WHITE);
+		return style(str, attr, Color.BLACK);
 	}
 
 	public static Spanned style(String str, int attr, int color) {
@@ -45,7 +45,7 @@ public class TextAttr
 			span.setSpan(new ForegroundColorSpan(color), 0, str.length(), 0);
 		else {
 			span.setSpan(new BackgroundColorSpan(color), 0, str.length(), 0);
-			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, str.length(), 0);
+			span.setSpan(new ForegroundColorSpan(Color.WHITE), 0, str.length(), 0);
 		}
 
 		if( (attr & ATTR_BOLD) != 0 )

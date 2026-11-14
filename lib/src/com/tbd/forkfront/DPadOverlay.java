@@ -263,11 +263,7 @@ public class DPadOverlay
 				float x = event.getX();
 				float y = event.getY();
 				boolean outside = x < -margin || y < -margin || x > v.getWidth() + margin || y > v.getHeight() + margin;
-				
-				if(action == MotionEvent.ACTION_DOWN)
-					v.getBackground().setAlpha(OPAQUE);
-				else if(action == MotionEvent.ACTION_UP || outside) 
-					v.getBackground().setAlpha(mOpacity);
+
 				v.invalidate();
 
 				return false;
@@ -292,7 +288,6 @@ public class DPadOverlay
 					mNHState.sendKeyCmd(k);
 				}
 				mLongClick = false;
-				v.getBackground().setAlpha(mOpacity);
 			}
 		};
 
@@ -342,11 +337,7 @@ public class DPadOverlay
 		{
 			for(Button b : mButtons)
 			{
-				b.getBackground().setAlpha(mOpacity);
-				if(mOpacity > 127)
-					b.setTextColor(mDefaultTextColor);
-				else
-					b.setTextColor(0xffffffff);
+				b.setTextColor(mDefaultTextColor);
 			}
 		}
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/base_frame"
-    android:background="#ff000000"
+    android:background="#ffffffff"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:baselineAligned="false"
@@ -25,10 +25,12 @@
                 android:layout_height="fill_parent" >
 
                 <LinearLayout
+                    android:id="@+id/top_bar_container"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|fill_horizontal"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:background="@drawable/eink_topbar_background" >
 
                     <com.tbd.forkfront.AutoFitTextView
                         android:id="@+id/nh_stat0"
@@ -42,9 +44,14 @@
                         android:layout_height="wrap_content"
                         android:textSize="15sp" />
 
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/eink_divider" />
+
                     <com.tbd.forkfront.NH_TextView
                         android:id="@+id/nh_message"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textSize="15sp" />
 
@@ -53,8 +60,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="--More--"
-                        android:background="@android:color/background_light"
-                        android:textColor="@android:color/black"
+                        android:background="@drawable/btn_eink_selector"
+                        android:textColor="@color/btn_eink_text_selector"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
                         android:clickable="true"
                         android:visibility="gone"
                         android:textSize="15sp" />
@@ -65,11 +76,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center"
-					android:paddingBottom="10dip"
+					android:padding="8dip"
+					android:layout_marginBottom="10dip"
                     android:clickable="false"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:text="Tap to continue"
+                    android:textColor="@color/eink_black"
+                    android:background="@drawable/eink_dialog_box"
                     android:textSize="15sp"
                     android:visibility="gone" />
 

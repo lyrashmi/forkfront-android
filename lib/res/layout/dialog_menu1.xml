@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:background="@android:drawable/screen_background_dark_transparent"
+	android:background="@color/eink_scrim"
 	android:clickable="true"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
@@ -23,6 +23,9 @@
 		<ListView
 			android:id="@+id/menu_list"
 			android:cacheColorHint="#00000000"
+			android:listSelector="@drawable/menu_row_selector"
+			android:divider="@color/eink_divider"
+			android:dividerHeight="1dip"
 			android:layout_weight="1"
 			android:layout_margin="6dip"
 			android:layout_width="fill_parent"

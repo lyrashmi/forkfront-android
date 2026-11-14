@@ -3,6 +3,7 @@ package com.tbd.forkfront;
 import java.util.Set;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.content.SharedPreferences;
 import android.text.SpannableStringBuilder;
 import android.view.View;
@@ -196,8 +197,8 @@ public class NHW_Status implements NH_Window
 		// ____________________________________________________________________________________
 		public void updateOpacity()
 		{
-			mViews[0].setBackgroundColor(mOpacity << 24);
-			mViews[1].setBackgroundColor(mOpacity << 24);
+			mViews[0].setBackgroundColor(Color.TRANSPARENT);
+			mViews[1].setBackgroundColor(Color.TRANSPARENT);
 		}
 	}
 }

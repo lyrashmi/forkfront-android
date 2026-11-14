@@ -516,6 +516,10 @@ public class CmdPanelLayout extends FrameLayout
 			params.width = LayoutParams.WRAP_CONTENT;
 			params.height = LayoutParams.MATCH_PARENT;
 			v.setLayoutParams(params);
+			if(location == 0)
+				v.setBackgroundResource(R.drawable.eink_leftbar_background);
+			else
+				v.setBackgroundResource(R.drawable.eink_rightbar_background);
 		}
 		else
 		{
@@ -525,6 +529,10 @@ public class CmdPanelLayout extends FrameLayout
 			params.width = LayoutParams.MATCH_PARENT;
 			params.height = LayoutParams.WRAP_CONTENT;
 			v.setLayoutParams(params);
+			if(location == 2)
+				v.setBackgroundResource(R.drawable.eink_topbar_background);
+			else
+				v.setBackgroundResource(R.drawable.eink_bottombar_background);
 		}
 		v.setVisibility(View.GONE);
 		addView(v);

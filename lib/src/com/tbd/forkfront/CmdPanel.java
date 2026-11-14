@@ -175,6 +175,8 @@ public class CmdPanel
 		btn.setLayoutParams(mParams);
 		btn.setFocusable(false);
 		btn.setFocusableInTouchMode(false);
+		btn.setBackgroundResource(R.drawable.btn_eink_selector);
+		btn.setTextColor(mContext.getResources().getColorStateList(R.color.btn_eink_text_selector));
 
 		mContext.registerForContextMenu(btn);
 
@@ -202,11 +204,8 @@ public class CmdPanel
 		for(int i = 0; i < nButtons; i++)
 		{
 			Button btn = (Button)mBtnPanel.getChildAt(i);
-			btn.getBackground().setAlpha(mOpacity);
-			if(mOpacity <= 127)
-				btn.setTextColor(0xffffffff);
-			else
-				btn.setTextColor(0xff000000);
+			btn.setBackgroundResource(R.drawable.btn_eink_selector);
+			btn.setTextColor(mContext.getResources().getColorStateList(R.color.btn_eink_text_selector));
 		}
 	}
 
@@ -218,9 +217,6 @@ public class CmdPanel
 		btn.setTag(cmd);
 		if(cmd.hasLabel())
 			btn.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
-		btn.getBackground().setAlpha(mOpacity);
-		if(mOpacity <= 127)
-			btn.setTextColor(0xffffffff);
 
 		btn.setOnClickListener(new OnClickListener()
 		{

@@ -396,7 +396,7 @@ public class NHW_Map implements NH_Window
 	@Override
 	public void preferencesUpdated(SharedPreferences prefs) {
 		int borderOpacity = prefs.getInt("borderOpacity", 50);
-		int borderColor = Color.rgb(0xc9*borderOpacity/256, 0xc9*borderOpacity/256, 0xf9*borderOpacity/256);
+		int borderColor = (borderOpacity << 24) | 0x000000;
 		if(borderColor != mBorderColor)
 		{
 			mBorderColor = borderColor;
@@ -619,6 +619,7 @@ public class NHW_Map implements NH_Window
 			super(mContext);
 			setFocusable(false);
 			setFocusableInTouchMode(false);
+			setBackgroundColor(0xffffffff);
 
 			((ViewGroup)mContext.findViewById(R.id.map_frame)).addView(this, 0);
 			mPaint = new TextPaint();
@@ -663,6 +664,7 @@ public class NHW_Map implements NH_Window
 		@Override
 		protected void onDraw(Canvas canvas)
 		{
+			canvas.drawColor(0xffffffff);
 			super.onDraw(canvas);
 
 			drawBorder(canvas);
@@ -715,7 +717,7 @@ public class NHW_Map implements NH_Window
 					}
 					else
 					{
-						mPaint.setColor(0xff000000);
+						mPaint.setColor(0xffffffff);
 						canvas.drawRect(dst, mPaint);
 					}
 
@@ -734,9 +736,9 @@ public class NHW_Map implements NH_Window
 			float x = (float)Math.floor(mViewOffset.x);
 			float y = (float)Math.floor(mViewOffset.y);
 
-			if(mCursorPos.x >= 0 && mHealthColor != 0)
+			if(mCursorPos.x >= 0)
 			{
-				mPaint.setColor(mHealthColor);
+				mPaint.setColor(mHealthColor != 0 ? mHealthColor : 0xff000000);
 				mPaint.setStyle(Style.STROKE);
 				mPaint.setStrokeWidth(2);
 				mPaint.setAntiAlias(false);
@@ -782,14 +784,14 @@ public class NHW_Map implements NH_Window
 				{
 					Tile tile = mTiles[tileY][tileX];
 					int fgColor = tile.color;
-					int bgColor = 0xff000000;
+					int bgColor = 0xffffffff;
 					if(tileX == mCursorPos.x && tileY == mCursorPos.y)
 					{
 						if(mHealthColor != 0) {
 							bgColor = mHealthColor;
-							fgColor = 0xff000000;
+							fgColor = 0xffffffff;
 						} else {
-							bgColor = 0x00000000;
+							bgColor = 0xff000000;
 							fgColor = 0xffffffff;
 						}
 					}
@@ -798,7 +800,7 @@ public class NHW_Map implements NH_Window
                              Tileset.OVERLAY_BW_ICE | Tileset.OVERLAY_BW_SINK | Tileset.OVERLAY_BW_SINK | Tileset.OVERLAY_BW_ENGR)) > 0)
 					{
 						bgColor = fgColor;
-						fgColor = 0xff000000;
+						fgColor = 0xffffffff;
 					}
 					
 					mPaint.setColor(bgColor);
@@ -865,10 +867,10 @@ public class NHW_Map implements NH_Window
 			float radius0 = mSelfRadius;
 			float radius1 = 5 * radius0;
 
-			mPaint.setColor(0x20ffffff);
+			mPaint.setColor(0x20000000);
 			canvas.drawCircle(cx, cy, radius1, mPaint);
 
-			mPaint.setColor(0xffffffff);
+			mPaint.setColor(0xff000000);
 			mPaint.setStyle(Style.STROKE);
 			mPaint.setStrokeWidth(2);
 			canvas.drawCircle(cx, cy, radius0, mPaint);
