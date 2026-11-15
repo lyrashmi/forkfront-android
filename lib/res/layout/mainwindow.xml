@@ -112,7 +112,7 @@
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
                         android:textSize="14sp"
-                        android:text="▲ D-Pad" />
+                        android:text="▼ D-Pad" />
                 </LinearLayout>
 
 				

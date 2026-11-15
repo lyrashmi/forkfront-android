@@ -41,7 +41,14 @@ public class DPadOverlay
 	public void setContext(Activity context)
 	{
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-		mIsUserExpanded = mPrefs.getBoolean("dpadUserExpanded", false);
+		if(!mPrefs.contains("dpadDefaultOpened_v3"))
+		{
+			mPrefs.edit()
+				.putBoolean("dpadDefaultOpened_v3", true)
+				.putBoolean("dpadUserExpanded", true)
+				.apply();
+		}
+		mIsUserExpanded = mPrefs.getBoolean("dpadUserExpanded", true);
 		mOrientation = context.getResources().getConfiguration().orientation;
 		mUI = new UI(context);		
 		mUI.updateVisibleState();
@@ -80,7 +87,7 @@ public class DPadOverlay
 	public void preferencesUpdated(SharedPreferences prefs)
 	{
 		mPrefs = prefs;
-		mIsUserExpanded = prefs.getBoolean("dpadUserExpanded", false);
+		mIsUserExpanded = prefs.getBoolean("dpadUserExpanded", true);
 		mPortAlwaysShow = prefs.getBoolean("ovlPortAlways", false);
 		mLandAlwaysShow = prefs.getBoolean("ovlLandAlways", false);
 		mPortLoc = getGravity(prefs.getString("ovlPortLoc", "5"));

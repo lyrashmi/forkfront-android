@@ -714,6 +714,9 @@ public class NHW_Map implements NH_Window
 		private boolean mIsTrackBallDown; //
 		private boolean mIsPannedSinceDown;
 		private boolean mIsViewPanned;
+		private long mLastTapTime;
+		private float mLastTapX, mLastTapY;
+		private int mLastTapTileX = -1, mLastTapTileY = -1;
 		private List<Character> mPickChars = Arrays.asList('.', ',', ';', ':');
 		private List<Character> mCancelKeys = Arrays.asList('\033', (char)0x80);
 		private Typeface mTypeface;
@@ -1112,7 +1115,52 @@ public class NHW_Map implements NH_Window
 				if(mZoomPanMode == ZoomPanMode.Pressed)
 				{
 					mPressCountDown.cancel();
-					onTouched(mPointer0.x, mPointer0.y, false);
+
+					final float upX = mPointer0.x;
+					final float upY = mPointer0.y;
+
+					float tileW = getScaledTileWidth();
+					float tileH = getScaledTileHeight();
+					final int tileX = (int)((upX - mViewOffset.x) / tileW);
+					final int tileY = (int)((upY - mViewOffset.y) / tileH);
+
+					long now = android.os.SystemClock.uptimeMillis();
+					long tapDelta = now - mLastTapTime;
+					int doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
+					float doubleTapSlop = ViewConfiguration.get(mContext).getScaledDoubleTapSlop();
+					float tapDx = Math.abs(upX - mLastTapX);
+					float tapDy = Math.abs(upY - mLastTapY);
+
+					boolean isDoubleTap = (tapDelta <= doubleTapTimeout) &&
+						((tapDx <= doubleTapSlop && tapDy <= doubleTapSlop) || (tileX == mLastTapTileX && tileY == mLastTapTileY));
+
+					if(mIsBlocking || mNHState.expectsDirection() || mNHState.isMouseLocked() || mPlayerPos.equals(tileX, tileY))
+					{
+						mLastTapTime = 0;
+						mLastTapTileX = -1;
+						mLastTapTileY = -1;
+						onTouched(upX, upY, false);
+					}
+					else if(isDoubleTap)
+					{
+						mLastTapTime = 0;
+						mLastTapTileX = -1;
+						mLastTapTileY = -1;
+
+						int destX = clamp(tileX, 0, TileCols - 1);
+						int destY = clamp(tileY, 0, TileRows - 1);
+						if(mNHState.isMouseLocked())
+							setCursorPos(destX, destY);
+						mNHState.sendPosCmd(destX, destY);
+					}
+					else
+					{
+						mLastTapTime = now;
+						mLastTapX = upX;
+						mLastTapY = upY;
+						mLastTapTileX = tileX;
+						mLastTapTileY = tileY;
+					}
 				}
 				setZoomPanMode(ZoomPanMode.Idle);
 			break;
@@ -1385,7 +1433,6 @@ public class NHW_Map implements NH_Window
 					}
 				break;
 			}
-			mIsViewPanned = false;
 		}
 
 		// ____________________________________________________________________________________
