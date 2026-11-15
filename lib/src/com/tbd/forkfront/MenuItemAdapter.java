@@ -60,8 +60,8 @@ public class MenuItemAdapter extends ArrayAdapter<MenuItem>
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 		final float density = mContext.getResources().getDisplayMetrics().density;
-		final int clickableItemMinH = (int)(35 * density + 0.5f);
-		final int clickableHeaderMinH = (int)(25 * density + 0.5f);
+		final int clickableItemMinH = (int)(52 * density + 0.5f);
+		final int clickableHeaderMinH = (int)(38 * density + 0.5f);
 
 		View v = convertView;
 		if(v == null)
@@ -110,7 +110,7 @@ public class MenuItemAdapter extends ArrayAdapter<MenuItem>
 					at.requestLayout();
 					at.invalidate();
 				} else {
-					int fixedW = (int)((mMenuHasTiles && mTileset.hasTiles() ? 20 : 40) * density);
+					int fixedW = (int)((mMenuHasTiles && mTileset.hasTiles() ? 30 : 60) * density);
 					at.setWidth(fixedW);
 				}
 			}

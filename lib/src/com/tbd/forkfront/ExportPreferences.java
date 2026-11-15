@@ -57,7 +57,7 @@ public class ExportPreferences extends Preference implements PreferenceManager.O
 					jsonobj.put("fullscreen", prefs.getBoolean("fullscreen", false));
 					jsonobj.put("immersive", prefs.getBoolean("immersive", false));
 					jsonobj.put("monospace", prefs.getBoolean("monospace", false));
-					jsonobj.put("lockView", prefs.getBoolean("lockView", false));
+					jsonobj.put("cameraAutoFollow", prefs.getBoolean("cameraAutoFollow", false));
 					jsonobj.put("fallbackRenderer", prefs.getBoolean("fallbackRenderer", false));
 
 					jsonobj.put("hearseMail", prefs.getString("hearseMail", ""));

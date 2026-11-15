@@ -5,7 +5,7 @@
 	<string name="nativeDataDir"></string>
 	<string name="libraryName"></string>
 	<string name="defaultsFile"></string>
-	<string name="defaultCmdPanel"></string>
+	<string name="defaultCmdPanel">ESC menu ... # 20s . : ; , M-l e d r z Z q t f w x i E Q P R W T o ^d ^p a A ^t D F p ^x ^o ?</string>
 	<bool name="useCP437Decoder">false</bool>
 	<bool name="hearseAvailable">false</bool>
 	<string name="hearseClientName"></string>

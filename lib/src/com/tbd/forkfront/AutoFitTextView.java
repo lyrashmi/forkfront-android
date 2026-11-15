@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 
 public class AutoFitTextView extends NH_TextView {
-	private static final float MIN_SIZE_SP = 10;
+	private static final float MIN_SIZE_SP = 15;
 
 	private boolean mTextChanged;
 	private int mLastMeasuredWidth;

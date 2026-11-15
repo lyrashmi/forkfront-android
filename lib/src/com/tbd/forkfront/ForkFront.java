@@ -17,13 +17,18 @@ package com.tbd.forkfront;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Dialog;
+import android.widget.Button;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -37,6 +42,7 @@ import java.util.regex.Pattern;
 public class ForkFront extends Activity
 {
 	private static NH_State nhState;
+	private static volatile boolean sIsSavingAndExiting = false;
 	private boolean mCtrlDown;
 	private boolean mMetaDown;
 	private boolean mBackTracking;
@@ -170,6 +176,11 @@ public class ForkFront extends Activity
 		mCtrlDown = false;
 		mMetaDown = false;
 
+		if(!sIsSavingAndExiting && nhState != null)
+		{
+			nhState.saveState();
+		}
+
 		super.onPause();
 	}
 
@@ -267,9 +278,93 @@ public class ForkFront extends Activity
 
 		if(requestCode == SETTINGS_ACTIVITY_CODE)
 		{
+			if(resultCode == Settings.RESULT_SAVE_GAME)
+			{
+				if(nhState != null)
+				{
+					nhState.saveState();
+					showSaveConfirmationDialog();
+				}
+				nhState.preferencesUpdated();
+				return;
+			}
+			if(resultCode == Settings.RESULT_SAVE_AND_EXIT)
+			{
+				sIsSavingAndExiting = true;
+				if(nhState != null)
+				{
+					nhState.setSavingAndExiting(true);
+					Toast.makeText(this, "Saving game and exiting...", Toast.LENGTH_SHORT).show();
+					nhState.saveAndQuit();
+				}
+				new Handler().postDelayed(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						finish();
+					}
+				}, 4000);
+				return;
+			}
 			nhState.preferencesUpdated();
 		}
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	private void showSaveConfirmationDialog()
+	{
+		final Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
+		dialog.setContentView(R.layout.dialog_save_confirm);
+		dialog.setCanceledOnTouchOutside(true);
+
+		View root = dialog.findViewById(R.id.save_confirm_root);
+		if(root != null)
+		{
+			root.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					dialog.dismiss();
+				}
+			});
+		}
+
+		View card = dialog.findViewById(R.id.save_confirm_card);
+		if(card != null)
+		{
+			card.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					// Keep dialog open if user clicks on the card itself
+				}
+			});
+		}
+
+		Button okBtn = (Button) dialog.findViewById(R.id.btn_save_confirm_ok);
+		if(okBtn != null)
+		{
+			okBtn.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					dialog.dismiss();
+				}
+			});
+		}
+
+		try
+		{
+			dialog.show();
+		}
+		catch(Exception e)
+		{
+			Log.print("Error showing save confirmation dialog: " + e.getMessage());
+		}
 	}
 
 	// ____________________________________________________________________________________
@@ -280,7 +375,7 @@ public class ForkFront extends Activity
 		mMetaDown = false;
 
 		Log.print("onSaveInstanceState(Bundle outState)");
-		if(nhState != null)
+		if(!sIsSavingAndExiting && nhState != null)
 			nhState.saveState();
 	}
 

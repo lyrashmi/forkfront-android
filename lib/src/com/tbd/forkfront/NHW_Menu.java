@@ -634,8 +634,28 @@ public class NHW_Menu implements NH_Window
 			mRoot = Util.inflate(mContext, R.layout.dialog_text, R.id.dlg_frame);
 			((TextView)mRoot.findViewById(R.id.text_view)).setText(mBuilder);
 
+			ScrollView scrollView = (ScrollView)mRoot.findViewById(R.id.scrollview);
+			View pagerBar = mRoot.findViewById(R.id.pager_bar);
+			Button btnPrev = (Button)mRoot.findViewById(R.id.btn_prev_page);
+			TextView txtPage = (TextView)mRoot.findViewById(R.id.txt_page_num);
+			Button btnNext = (Button)mRoot.findViewById(R.id.btn_next_page);
+			View pagerDivider = mRoot.findViewById(R.id.pager_divider);
+			if(scrollView != null && pagerBar != null)
+			{
+				EInkPager.setupScrollViewPager(scrollView, pagerBar, btnPrev, txtPage, btnNext, pagerDivider);
+			}
+
 			View btn = mRoot.findViewById(R.id.btn_ok);
 			btn.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					closeInternal();
+				}
+			});
+
+			mRoot.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
@@ -679,6 +699,16 @@ public class NHW_Menu implements NH_Window
 				inflateLayout(how);
 
 			mListView.setAdapter(new MenuItemAdapter(mContext, R.layout.menu_item, mItems, mTileset, mHow));
+
+			View pagerBar = mRoot.findViewById(R.id.pager_bar);
+			Button btnPrev = (Button)mRoot.findViewById(R.id.btn_prev_page);
+			TextView txtPage = (TextView)mRoot.findViewById(R.id.txt_page_num);
+			Button btnNext = (Button)mRoot.findViewById(R.id.btn_next_page);
+			View pagerDivider = mRoot.findViewById(R.id.pager_divider);
+			if(mListView != null && pagerBar != null)
+			{
+				EInkPager.setupListViewPager(mListView, pagerBar, btnPrev, txtPage, btnNext, pagerDivider);
+			}
 
 			mRoot.requestFocus();
 
@@ -747,6 +777,26 @@ public class NHW_Menu implements NH_Window
 						sendCancelSelect();
 					}
 				});
+
+			View btnClose = mRoot.findViewById(R.id.btn_close);
+			if(btnClose != null)
+				btnClose.setOnClickListener(new OnClickListener()
+				{
+					@Override
+					public void onClick(View view)
+					{
+						sendCancelSelect();
+					}
+				});
+
+			mRoot.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					sendCancelSelect();
+				}
+			});
 
 			mListView = (ListView)mRoot.findViewById(R.id.menu_list);
 

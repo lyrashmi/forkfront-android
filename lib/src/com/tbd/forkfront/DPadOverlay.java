@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -21,9 +22,11 @@ public class DPadOverlay
 	private boolean mAlwaysShow;
 	private boolean mPortAlwaysShow;
 	private boolean mLandAlwaysShow;
+	private boolean mIsUserExpanded;
+	private SharedPreferences mPrefs;
 	private UI mUI;
-	private int mPortLoc;
-	private int mLandLoc;
+	private int mPortLoc = Gravity.BOTTOM | Gravity.RIGHT;
+	private int mLandLoc = Gravity.BOTTOM | Gravity.RIGHT;
 	public int mOrientation;
 	private int mOpacity;
 	private int mRelSize;
@@ -37,6 +40,8 @@ public class DPadOverlay
 	// ____________________________________________________________________________________
 	public void setContext(Activity context)
 	{
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+		mIsUserExpanded = mPrefs.getBoolean("dpadUserExpanded", false);
 		mOrientation = context.getResources().getConfiguration().orientation;
 		mUI = new UI(context);		
 		mUI.updateVisibleState();
@@ -47,40 +52,47 @@ public class DPadOverlay
 	{
 		mShowDirectional = showDirectional;
 		mHideForced = false;
-		mUI.updateVisibleState();
+		if(mUI != null)
+			mUI.updateVisibleState();
 	}
 
 	// ____________________________________________________________________________________
 	public boolean isVisible()
 	{
-		return (mAlwaysShow || mShowDirectional) && !mHideForced;
+		return (mIsUserExpanded || mAlwaysShow || mShowDirectional) && !mHideForced;
 	}
 
 	// ____________________________________________________________________________________
 	private boolean isNormalMode()
 	{
-		return mAlwaysShow && !mShowDirectional;
+		return (mIsUserExpanded || mAlwaysShow) && !mShowDirectional;
 	}
 
 	// ____________________________________________________________________________________
 	public void forceHide()
 	{
 		mHideForced = true;
-		mUI.updateVisibleState();
+		if(mUI != null)
+			mUI.updateVisibleState();
 	}
 
 	// ____________________________________________________________________________________
 	public void preferencesUpdated(SharedPreferences prefs)
 	{
+		mPrefs = prefs;
+		mIsUserExpanded = prefs.getBoolean("dpadUserExpanded", false);
 		mPortAlwaysShow = prefs.getBoolean("ovlPortAlways", false);
 		mLandAlwaysShow = prefs.getBoolean("ovlLandAlways", false);
-		mPortLoc = getGravity(prefs.getString("ovlPortLoc", "1"));
-		mLandLoc = getGravity(prefs.getString("ovlLandLoc", "1"));
+		mPortLoc = getGravity(prefs.getString("ovlPortLoc", "5"));
+		mLandLoc = getGravity(prefs.getString("ovlLandLoc", "5"));
 		mOpacity = prefs.getInt("ovlOpacity", 255);
 		mRelSize = prefs.getInt("ovlSize", 0);
-		mUI.setTransparent();
-		mUI.updateSize();
-		setOrientation(mOrientation);
+		if(mUI != null)
+		{
+			mUI.setTransparent();
+			mUI.updateSize();
+			setOrientation(mOrientation);
+		}
 	}
 	
 	// ____________________________________________________________________________________
@@ -99,19 +111,21 @@ public class DPadOverlay
         	return Gravity.BOTTOM;
         if(loc == 5)
 			return Gravity.BOTTOM | Gravity.RIGHT;
-		return Gravity.CENTER;
+		return Gravity.BOTTOM | Gravity.RIGHT;
 	}
 
 	// ____________________________________________________________________________________
 	public void setOrientation(int orientation)
 	{
-		mUI.setOrientation(orientation);			
+		if(mUI != null)
+			mUI.setOrientation(orientation);			
 	}
 
 	// ____________________________________________________________________________________
 	public void updateNumPadState()
 	{
-		mUI.updateNumPadState();
+		if(mUI != null)
+			mUI.updateNumPadState();
 	}
 
 	// ____________________________________________________________________________________ //
@@ -119,7 +133,9 @@ public class DPadOverlay
 	// ____________________________________________________________________________________ //
 	private class UI
 	{
+		private View mContainer;
 		private View mDPad;
+		private Button mBtnToggle;
 		private View mExtra;
 		private Button[] mButtons;
 		private Activity mContext;
@@ -129,7 +145,27 @@ public class DPadOverlay
 		public UI(Activity context)
 		{
 			mContext = context;
+			mContainer = context.findViewById(R.id.dpad_container);
 			mDPad = context.findViewById(R.id.dpad);
+
+			if(mContainer != null)
+			{
+				mBtnToggle = (Button)mContainer.findViewById(R.id.btn_dpad_toggle);
+				if(mBtnToggle != null)
+				{
+					mBtnToggle.setOnClickListener(new OnClickListener()
+					{
+						@Override
+						public void onClick(View v)
+						{
+							mIsUserExpanded = !mIsUserExpanded;
+							if(mPrefs != null)
+								mPrefs.edit().putBoolean("dpadUserExpanded", mIsUserExpanded).apply();
+							updateVisibleState();
+						}
+					});
+				}
+			}
 
 			mButtons = new Button[12];
 			mButtons[0] = (Button)mDPad.findViewById(R.id.dpad0);
@@ -201,34 +237,62 @@ public class DPadOverlay
 		public void setOrientation(int orientation)
 		{
 			mOrientation = orientation;
-			FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)mDPad.getLayoutParams();
-			if(orientation == Configuration.ORIENTATION_PORTRAIT)
+			View target = mContainer != null ? mContainer : mDPad;
+			if(target != null && target.getLayoutParams() instanceof FrameLayout.LayoutParams)
 			{
-				params.gravity = mPortLoc;
-				mAlwaysShow = mPortAlwaysShow;
+				FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)target.getLayoutParams();
+				if(orientation == Configuration.ORIENTATION_PORTRAIT)
+				{
+					params.gravity = mPortLoc;
+					mAlwaysShow = mPortAlwaysShow;
+				}
+				else
+				{
+					params.gravity = mLandLoc;
+					mAlwaysShow = mLandAlwaysShow;
+				}
+				target.setLayoutParams(params);
 			}
-			else
-			{
-				params.gravity = mLandLoc;
-				mAlwaysShow = mLandAlwaysShow;
-			}
-			mDPad.setVisibility(View.GONE);
 			updateVisibleState();
 		}
 
 		// ____________________________________________________________________________________
-		private void updateVisibleState()
+		public void updateVisibleState()
 		{
-			if(isVisible())
+			if(mContainer == null || mDPad == null)
+				return;
+
+			if(mHideForced)
 			{
-				if(mShowDirectional)
-					setDirectionalMode();
-				else
-					setNormalMode();
+				mContainer.setVisibility(View.GONE);
+				return;
+			}
+			mContainer.setVisibility(View.VISIBLE);
+
+			if(mShowDirectional)
+			{
+				setDirectionalMode();
 				mDPad.setVisibility(View.VISIBLE);
+				if(mBtnToggle != null)
+					mBtnToggle.setVisibility(View.GONE);
 			}
 			else
-				mDPad.setVisibility(View.GONE);
+			{
+				setNormalMode();
+				if(mBtnToggle != null)
+				{
+					mBtnToggle.setVisibility(View.VISIBLE);
+					mBtnToggle.setText(mIsUserExpanded ? "▼ D-Pad" : "▲ D-Pad");
+				}
+				if(mIsUserExpanded || mAlwaysShow)
+				{
+					mDPad.setVisibility(View.VISIBLE);
+				}
+				else
+				{
+					mDPad.setVisibility(View.GONE);
+				}
+			}
 		}
 
 		// ____________________________________________________________________________________
@@ -259,7 +323,7 @@ public class DPadOverlay
 					mLongClick = false;
 
 				final float density = mContext.getResources().getDisplayMetrics().density;
-				float margin = density * 18;
+				float margin = density * 27;
 				float x = event.getX();
 				float y = event.getY();
 				boolean outside = x < -margin || y < -margin || x > v.getWidth() + margin || y > v.getHeight() + margin;
@@ -346,7 +410,7 @@ public class DPadOverlay
 		{
 			final float density = mContext.getResources().getDisplayMetrics().density;
 			int scale = mRelSize > 0 ? 2 : 1;
-			int size = (int)((50 + scale * mRelSize) * density + 0.5f);
+			int size = (int)((75 + scale * mRelSize) * density + 0.5f);
 			for(Button b : mButtons)
 			{
 				b.getLayoutParams().width = size;

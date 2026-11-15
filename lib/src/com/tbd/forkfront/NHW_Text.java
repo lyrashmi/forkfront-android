@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.text.SpannableStringBuilder;
 import android.view.*;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -148,6 +149,7 @@ public class NHW_Text implements NH_Window
 	private class UI
 	{
 		private final Activity mContext;
+		private View mRoot;
 		private TextView mTextView;
 		private ScrollView mScroll;
 		private boolean mIsScrolling;
@@ -155,8 +157,32 @@ public class NHW_Text implements NH_Window
 		public UI(Activity context)
 		{
 			mContext = context;
-			mScroll = (ScrollView)Util.inflate(context, R.layout.textwindow, R.id.dlg_frame);
-			mTextView = (TextView)mScroll.findViewById(R.id.text_view);
+			mRoot = Util.inflate(context, R.layout.textwindow, R.id.dlg_frame);
+			mScroll = (ScrollView)mRoot.findViewById(R.id.scrollview);
+			mTextView = (TextView)mRoot.findViewById(R.id.text_view);
+
+			View closeBtn = mRoot.findViewById(R.id.btn_close);
+			if(closeBtn != null)
+			{
+				closeBtn.setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						close();
+					}
+				});
+			}
+
+			View pagerBar = mRoot.findViewById(R.id.pager_bar);
+			Button btnPrev = (Button)mRoot.findViewById(R.id.btn_prev_page);
+			TextView txtPage = (TextView)mRoot.findViewById(R.id.txt_page_num);
+			Button btnNext = (Button)mRoot.findViewById(R.id.btn_next_page);
+			View pagerDivider = mRoot.findViewById(R.id.pager_divider);
+			if(mScroll != null && pagerBar != null)
+			{
+				EInkPager.setupScrollViewPager(mScroll, pagerBar, btnPrev, txtPage, btnNext, pagerDivider);
+			}
 
 			mTextView.setOnTouchListener(mTouchListener);
 			mScroll.setOnTouchListener(mTouchListener);
@@ -231,13 +257,22 @@ public class NHW_Text implements NH_Window
 		public void showInternal()
 		{
 			update();
-			mScroll.setVisibility(View.VISIBLE);
+			mRoot.setVisibility(View.VISIBLE);
+			View pagerBar = mRoot.findViewById(R.id.pager_bar);
+			Button btnPrev = (Button)mRoot.findViewById(R.id.btn_prev_page);
+			TextView txtPage = (TextView)mRoot.findViewById(R.id.txt_page_num);
+			Button btnNext = (Button)mRoot.findViewById(R.id.btn_next_page);
+			View pagerDivider = mRoot.findViewById(R.id.pager_divider);
+			if(mScroll != null && pagerBar != null)
+			{
+				EInkPager.setupScrollViewPager(mScroll, pagerBar, btnPrev, txtPage, btnNext, pagerDivider);
+			}
 		}
 
 		// ____________________________________________________________________________________
 		public void hideInternal()
 		{
-			mScroll.setVisibility(View.GONE);
+			mRoot.setVisibility(View.GONE);
 		}
 
 		// ____________________________________________________________________________________

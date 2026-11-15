@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 public class NHW_Message implements NH_Window
 {
-	protected static final int SHOW_MAX_LINES = 3;
+	protected static final int SHOW_MAX_LINES = 7;
 
 	private NetHackIO mIO;
 	private Activity mContext;
@@ -266,7 +266,7 @@ public class NHW_Message implements NH_Window
 		public void clear()
 		{
 			m_more.setVisibility(View.GONE);
-			m_view.setText("");
+			updateText();
 		}
 
 		// ____________________________________________________________________________________
@@ -294,14 +294,16 @@ public class NHW_Message implements NH_Window
 		private void updateText()
 		{
 			m_view.setText("");
-			if( mDispCount > 0 ) {
-				int lineCount = Math.min(SHOW_MAX_LINES, mDispCount);
+			int lineCount = Math.min(SHOW_MAX_LINES, mLogCount);
+			if( lineCount > 0 ) {
 				int iStart = mCurrentIdx - lineCount + 1;
 				for( int i = 0; i < lineCount; i++ ) {
 					String msg = mLog[getIndex(iStart + i)];
-					if( i > 0 )
-						m_view.append("\n");
-					m_view.append(msg);
+					if( msg != null ) {
+						if( m_view.length() > 0 )
+							m_view.append("\n");
+						m_view.append(msg);
+					}
 				}
 			}
 		}

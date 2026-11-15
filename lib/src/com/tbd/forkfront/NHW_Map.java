@@ -109,6 +109,10 @@ public class NHW_Map implements NH_Window
 	private final Tileset mTileset;
 	private PointF mViewOffset;
 	private RectF mCanvasRect;
+	public static final int TILE_STONE = 1272;
+	public static final int TILE_UNEXPLORED = 1469;
+	public static final int TILE_NOTHING = 1470;
+	private boolean mNeedsInitialCenter = true;
 	private Point mPlayerPos;
 	private Point mCursorPos;
 	private boolean mIsRogue;
@@ -133,7 +137,8 @@ public class NHW_Map implements NH_Window
 			for(int i = 0; i < row.length; i++)
 				row[i] = new Tile();
 		}
-		mScale = 1.f;
+		mScale = 1.5f;
+		mScaleCount = (float)(Math.log(1.5f) / Math.log(ZOOM_BASE));
 		mViewOffset = new PointF();
 		mCanvasRect = new RectF();
 		mPlayerPos = new Point();
@@ -218,6 +223,7 @@ public class NHW_Map implements NH_Window
 	@Override
 	public void clear()
 	{
+		mNeedsInitialCenter = true;
 		for(Tile[] row : mTiles)
 		{
 			for(int i = 0; i < row.length; i++)
@@ -231,12 +237,23 @@ public class NHW_Map implements NH_Window
 		mPlayerPos.x = playerX;
 		mPlayerPos.y = playerY;
 
-		centerView(tileX, tileY);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+		boolean autoFollow = prefs.getBoolean("cameraAutoFollow", false);
+		if(autoFollow || mNeedsInitialCenter)
+		{
+			mNeedsInitialCenter = false;
+			centerView(tileX, tileY);
+		}
+		else
+		{
+			ensureVisibleWithMargin(tileX, tileY);
+		}
 	}
 	public boolean isViewPanned() {
 		return mUI.mIsViewPanned;
 	}
 	public void centerViewAroundPlayer() {
+		mNeedsInitialCenter = false;
 		centerView(mPlayerPos.x, mPlayerPos.y);
 		mUI.mIsViewPanned = false;
 	}
@@ -269,6 +286,83 @@ public class NHW_Map implements NH_Window
 	}
 
 	// ____________________________________________________________________________________
+	private void ensureVisibleWithMargin(int tileX, int tileY)
+	{
+		float tileW = mUI.getScaledTileWidth();
+		float tileH = mUI.getScaledTileHeight();
+		float margin = 2.0f;
+
+		float screenLeft = (mCanvasRect.left - mViewOffset.x) / tileW + margin;
+		float screenRight = (mCanvasRect.right - mViewOffset.x) / tileW - margin - 1.0f;
+		float screenTop = (mCanvasRect.top - mViewOffset.y) / tileH + margin;
+		float screenBottom = (mCanvasRect.bottom - mViewOffset.y) / tileH - margin - 1.0f;
+
+		float dx = 0;
+		float dy = 0;
+
+		if(screenRight > screenLeft)
+		{
+			if(tileX < screenLeft)
+			{
+				dx = (screenLeft - tileX) * tileW;
+			}
+			else if(tileX > screenRight)
+			{
+				dx = (screenRight - tileX) * tileW;
+			}
+		}
+
+		if(screenBottom > screenTop)
+		{
+			if(tileY < screenTop)
+			{
+				dy = (screenTop - tileY) * tileH;
+			}
+			else if(tileY > screenBottom)
+			{
+				dy = (screenBottom - tileY) * tileH;
+			}
+		}
+
+		if(dx != 0 || dy != 0)
+		{
+			mViewOffset.x += dx;
+			mViewOffset.y += dy;
+			clampViewOffset();
+			mUI.invalidate();
+		}
+	}
+
+	// ____________________________________________________________________________________
+	private void clampViewOffset()
+	{
+		float tileW = mUI.getScaledTileWidth();
+		float tileH = mUI.getScaledTileHeight();
+		float totalW = tileW * TileCols;
+		float totalH = tileH * TileRows;
+
+		if(totalW > mCanvasRect.width())
+		{
+			float minX = mCanvasRect.right - totalW;
+			float maxX = mCanvasRect.left;
+			if(mViewOffset.x < minX)
+				mViewOffset.x = minX;
+			else if(mViewOffset.x > maxX)
+				mViewOffset.x = maxX;
+		}
+
+		if(totalH > mCanvasRect.height())
+		{
+			float minY = mCanvasRect.bottom - totalH;
+			float maxY = mCanvasRect.top;
+			if(mViewOffset.y < minY)
+				mViewOffset.y = minY;
+			else if(mViewOffset.y > maxY)
+				mViewOffset.y = maxY;
+		}
+	}
+
+	// ____________________________________________________________________________________
 	private boolean shouldLockView()
 	{
 		return shouldLockView(mUI.getScaledTileWidth(), mUI.getScaledTileHeight());
@@ -278,7 +372,7 @@ public class NHW_Map implements NH_Window
 	private boolean shouldLockView(float tileW, float tileH)
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-		if(!prefs.getBoolean("lockView", true))
+		if(prefs.getBoolean("cameraAutoFollow", false))
 			return false;
 
 		return tileW * TileCols	<= mCanvasRect.width() && tileH * TileRows <= mCanvasRect.height();
@@ -395,6 +489,10 @@ public class NHW_Map implements NH_Window
 	// ____________________________________________________________________________________
 	@Override
 	public void preferencesUpdated(SharedPreferences prefs) {
+		if(!prefs.getBoolean("autoFollowMigrated", false))
+		{
+			prefs.edit().putBoolean("cameraAutoFollow", false).putBoolean("autoFollowMigrated", true).apply();
+		}
 		int borderOpacity = prefs.getInt("borderOpacity", 50);
 		int borderColor = (borderOpacity << 24) | 0x000000;
 		if(borderColor != mBorderColor)
@@ -417,7 +515,7 @@ public class NHW_Map implements NH_Window
 	// ____________________________________________________________________________________
 	private boolean canPan()
 	{
-		return travelAfterPan() || !shouldLockView();
+		return true;
 	}
 
 	// ____________________________________________________________________________________
@@ -467,6 +565,7 @@ public class NHW_Map implements NH_Window
 		if(mIsRogue != bIsRogueLevel)
 		{
 			mIsRogue = bIsRogueLevel;
+			mNeedsInitialCenter = true;
 			updateZoomLimits();
 		}
 	}
@@ -583,7 +682,14 @@ public class NHW_Map implements NH_Window
 		float zoomLevel = 0;
 		try
 		{
-			zoomLevel = prefs.getFloat("zoomLevel", 0.f);
+			if(prefs.contains("zoomLevel"))
+			{
+				zoomLevel = prefs.getFloat("zoomLevel", 0.f);
+			}
+			else
+			{
+				zoomLevel = (float)(Math.log(1.5f) / Math.log(ZOOM_BASE));
+			}
 		}
 		catch(Exception e)
 		{
@@ -707,18 +813,14 @@ public class NHW_Map implements NH_Window
 				{
 					dst.set((int)x, (int)y, (int)(x + tileW), (int)(y + tileH));
 					Tile tile = mTiles[tileY][tileX];
-					if(tile.glyph >= 0)
+					mPaint.setColor(0xffffffff);
+					canvas.drawRect(dst, mPaint);
+					if(tile.glyph >= 0 && tile.glyph != TILE_STONE && tile.glyph != TILE_UNEXPLORED && tile.glyph != TILE_NOTHING)
 					{
-						mPaint.setColor(0xffffffff);
 						mTileset.drawTile(canvas, tile.glyph, dst, mPaint);
 						Bitmap ovl = mTileset.getTileOverlay(tile.overlay);
 						if(ovl != null)
 							canvas.drawBitmap(ovl, mTileset.getOverlayRect(tile.overlay), dst, mPaint);
-					}
-					else
-					{
-						mPaint.setColor(0xffffffff);
-						canvas.drawRect(dst, mPaint);
 					}
 
 					x += tileW;
@@ -922,7 +1024,11 @@ public class NHW_Map implements NH_Window
 		public void viewAreaChanged(Rect viewRect)
 		{
 			mCanvasRect.set(viewRect);
-			centerView(mCursorPos.x, mCursorPos.y);
+			if (mPlayerPos.x >= 0 && mPlayerPos.y >= 0) {
+				centerView(mPlayerPos.x, mPlayerPos.y);
+			} else {
+				centerView(mCursorPos.x, mCursorPos.y);
+			}
 			//Log.print(Integer.toString(cmdW) + " " + Integer.toString(cmdH));
 		}
 		
@@ -1203,6 +1309,14 @@ public class NHW_Map implements NH_Window
 				String blockMsg = Util.hasPhysicalKeyboard(mContext) ? "Press any key to continue" : "Tap to continue";
 				TextView tv = (TextView)mContext.findViewById(R.id.nh_blockmsg);
 				tv.setText(blockMsg);
+				tv.setOnClickListener(new OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						setBlocking(false);
+					}
+				});
 				tv.setVisibility(View.VISIBLE);
 			}
 			else

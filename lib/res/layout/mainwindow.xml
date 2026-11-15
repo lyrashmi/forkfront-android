@@ -5,7 +5,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:baselineAligned="false"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="5dp" >
 
     <FrameLayout
         android:id="@+id/dlg_frame"
@@ -36,13 +37,13 @@
                         android:id="@+id/nh_stat0"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp" />
+                        android:textSize="22sp" />
 
                     <com.tbd.forkfront.AutoFitTextView
                         android:id="@+id/nh_stat1"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp" />
+                        android:textSize="22sp" />
 
                     <View
                         android:layout_width="fill_parent"
@@ -53,7 +54,9 @@
                         android:id="@+id/nh_message"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp" />
+                        android:minLines="7"
+                        android:maxLines="7"
+                        android:textSize="22sp" />
 
                     <com.tbd.forkfront.NH_TextView
                         android:id="@+id/more"
@@ -62,13 +65,13 @@
                         android:text="--More--"
                         android:background="@drawable/btn_eink_selector"
                         android:textColor="@color/btn_eink_text_selector"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
-                        android:paddingTop="2dp"
-                        android:paddingBottom="2dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
                         android:clickable="true"
                         android:visibility="gone"
-                        android:textSize="15sp" />
+                        android:textSize="22sp" />
                 </LinearLayout>
 
                 <com.tbd.forkfront.NH_TextView
@@ -76,20 +79,41 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center"
-					android:padding="8dip"
+					android:padding="12dip"
 					android:layout_marginBottom="10dip"
-                    android:clickable="false"
+                    android:clickable="true"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:text="Tap to continue"
                     android:textColor="@color/eink_black"
                     android:background="@drawable/eink_dialog_box"
-                    android:textSize="15sp"
+                    android:textSize="22sp"
                     android:visibility="gone" />
 
-                <include
-                    android:id="@+id/dpad"
-                    layout="@layout/dpad_ovl" />
+                <LinearLayout
+                    android:id="@+id/dpad_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:orientation="vertical"
+                    android:gravity="right"
+                    android:visibility="visible">
+
+                    <include
+                        android:id="@+id/dpad"
+                        layout="@layout/dpad_ovl" />
+
+                    <Button
+                        android:id="@+id/btn_dpad_toggle"
+                        style="@style/ButtonText"
+                        android:layout_width="wrap_content"
+                        android:minWidth="90dp"
+                        android:layout_height="36dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:textSize="14sp"
+                        android:text="▲ D-Pad" />
+                </LinearLayout>
 
 				
                 <LinearLayout
@@ -107,6 +131,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="bottom" />
+        android:layout_gravity="bottom"
+        android:visibility="gone" />
 
 </LinearLayout>

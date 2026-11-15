@@ -338,6 +338,13 @@ public class NH_State
 	}
 
 	// ____________________________________________________________________________________
+	public void setSavingAndExiting(boolean saving)
+	{
+		if(mIO != null)
+			mIO.setSavingAndExiting(saving);
+	}
+
+	// ____________________________________________________________________________________
 	public void saveAndQuit()
 	{
 		mIO.saveAndQuit();

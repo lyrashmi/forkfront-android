@@ -200,6 +200,7 @@ public class Input
 		case 'Y': return KeyEvent.KEYCODE_Y;
 		case 'Z': return KeyEvent.KEYCODE_Z;
 		case 10: return KeyEvent.KEYCODE_ENTER;
+		case '\033': return KeyEvent.KEYCODE_ESCAPE;
 		default: return 0;
 		}
 	}

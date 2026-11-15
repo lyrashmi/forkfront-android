@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/save_confirm_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/eink_scrim">
+
+    <LinearLayout
+        android:id="@+id/save_confirm_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:background="@drawable/eink_dialog_box"
+        android:padding="24dp"
+        android:gravity="center">
+
+        <TextView
+            style="@style/DialogText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Game has been saved."
+            android:paddingBottom="16dp" />
+
+        <Button
+            android:id="@+id/btn_save_confirm_ok"
+            style="@style/ButtonText"
+            android:layout_width="wrap_content"
+            android:minWidth="100dp"
+            android:layout_height="wrap_content"
+            android:text="OK" />
+    </LinearLayout>
+</FrameLayout>

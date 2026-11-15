@@ -3,6 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:forkfront="forkfront">
 	<PreferenceCategory
+		android:layout="@layout/eink_preference_category"
 		android:title="Settings"
 		android:key="settings">
 		<PreferenceScreen
@@ -68,11 +69,11 @@
 			android:entryValues="@array/travelValues"/>
 
         <CheckBoxPreference
-                android:title="Lock view"
-                android:summary="Do not move the view with the character when the entire map can fit the screen"
+                android:title="Camera Auto-Follow"
+                android:summary="Keep camera centered on character every step (causes redraws on e-ink)"
                 android:persistent="true"
-                android:defaultValue="true"
-                android:key="lockView"/>
+                android:defaultValue="false"
+                android:key="cameraAutoFollow"/>
 
 		<CheckBoxPreference
 			android:title="Monospace mode"
@@ -124,7 +125,7 @@
 				android:summary="The location of the overlay in portrait mode"
 				android:persistent="true"
 				android:key="ovlPortLoc"
-				android:defaultValue="1"
+				android:defaultValue="5"
 				android:entries="@array/dirLocationNames"
 				android:entryValues="@array/dirLocationValues"/>
 
@@ -133,7 +134,7 @@
 				android:summary="The location of the overlay in landscape mode"
 				android:persistent="true"
 				android:key="ovlLandLoc"
-				android:defaultValue="1"
+				android:defaultValue="5"
 				android:entries="@array/dirLocationNames"
 				android:entryValues="@array/dirLocationValues"/>
 
@@ -636,6 +637,7 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory
+		android:layout="@layout/eink_preference_category"
 		android:title="Advanced"
 		android:key="advanced">
 
@@ -707,7 +709,9 @@
 
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="Export/Import">
+	<PreferenceCategory
+		android:layout="@layout/eink_preference_category"
+		android:title="Export/Import">
 		<com.tbd.forkfront.ExportPreferences
 			android:title="Export"
 			android:key="exportPreferences"
@@ -719,6 +723,7 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory
+		android:layout="@layout/eink_preference_category"
 		android:title="About">
 
 		<PreferenceScreen

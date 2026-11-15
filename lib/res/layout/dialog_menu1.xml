@@ -8,17 +8,34 @@
 	<LinearLayout
 		android:orientation="vertical"
 		style="@style/NH_Dialog"
-		android:padding="12dip"
+		android:padding="18dip"
+		android:clickable="true"
 		android:layout_centerInParent="true"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content">
 
-		<com.tbd.forkfront.NH_TextView
-			android:id="@+id/title"
-			style="@style/DialogTitle"
+		<LinearLayout
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:padding="12dip"/>
+			android:orientation="horizontal"
+			android:gravity="center_vertical">
+			<com.tbd.forkfront.NH_TextView
+				android:id="@+id/title"
+				style="@style/DialogTitle"
+				android:layout_width="0dip"
+				android:layout_weight="1"
+				android:layout_height="wrap_content"
+				android:padding="12dip"/>
+			<Button
+				android:id="@+id/btn_close"
+				style="@style/ButtonText"
+				android:text="Back"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingLeft="12dip"
+				android:paddingRight="12dip"
+				android:layout_marginLeft="6dip"/>
+		</LinearLayout>
 
 		<ListView
 			android:id="@+id/menu_list"
@@ -30,6 +47,50 @@
 			android:layout_margin="6dip"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"/>
+
+		<ImageView
+			android:id="@+id/pager_divider"
+			android:layout_width="fill_parent"
+			android:layout_height="1dp"
+			android:background="@color/eink_black"
+			android:visibility="gone" />
+
+		<LinearLayout
+			android:id="@+id/pager_bar"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:gravity="center"
+			android:paddingTop="6dip"
+			android:paddingBottom="6dip"
+			android:visibility="gone">
+
+			<Button
+				android:id="@+id/btn_prev_page"
+				style="@style/ButtonText"
+				android:layout_width="wrap_content"
+				android:minWidth="90dp"
+				android:layout_height="wrap_content"
+				android:text="&#x25c4; Prev" />
+
+			<TextView
+				android:id="@+id/txt_page_num"
+				style="@style/DialogText"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				android:paddingLeft="16dip"
+				android:paddingRight="16dip"
+				android:text="Page 1/1" />
+
+			<Button
+				android:id="@+id/btn_next_page"
+				style="@style/ButtonText"
+				android:layout_width="wrap_content"
+				android:minWidth="90dp"
+				android:layout_height="wrap_content"
+				android:text="Next &#x25ba;" />
+		</LinearLayout>
 
 	</LinearLayout>
 </RelativeLayout>

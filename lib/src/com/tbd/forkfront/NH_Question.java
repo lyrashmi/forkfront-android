@@ -127,6 +127,18 @@ public class NH_Question
 
 			mRoot.setOnKeyListener(mKeyListener);
 
+			mRoot.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					if(!mIsDisabled)
+					{
+						select(mapInput('\033'));
+					}
+				}
+			});
+
 			// mRoot.setClickable(true);
 			// mRoot.setFocusable(true);
 			// mRoot.setFocusableInTouchMode(true);

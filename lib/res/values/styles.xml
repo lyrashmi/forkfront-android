@@ -6,8 +6,14 @@
         <item name="android:colorBackground">@color/eink_white</item>
         <item name="android:textColor">@color/eink_black</item>
         <item name="android:textColorPrimary">@color/eink_black</item>
-        <item name="android:textColorSecondary">@color/eink_dim_text</item>
+        <item name="android:textColorSecondary">@color/eink_black</item>
         <item name="android:buttonStyle">@style/ButtonText</item>
+        <item name="android:preferenceCategoryStyle">@style/PreferenceCategoryEInk</item>
+        <item name="android:listSeparatorTextViewStyle">@style/PreferenceCategoryEInk</item>
+    </style>
+
+    <style name="PreferenceCategoryEInk">
+        <item name="android:layout">@layout/eink_preference_category</item>
     </style>
 
     <style name="NH_Dialog" parent="@android:style/Theme.Dialog">
@@ -16,52 +22,53 @@
     
     <style name="WindowText" parent="@android:style/TextAppearance.Medium">
 		<item name="android:typeface">monospace</item>
-		<item name="android:textSize">11sp</item>
+		<item name="android:textSize">16sp</item>
 		<item name="android:textColor">@color/eink_black</item>
     </style>    
     <style name="DialogTitle" parent="@android:style/TextAppearance.DialogWindowTitle">
 		<item name="android:typeface">sans</item>
-		<item name="android:textSize">18sp</item>
+		<item name="android:textSize">27sp</item>
 		<item name="android:textColor">@color/eink_black</item>
 		<item name="android:textStyle">bold</item>
     </style>    
     <style name="DialogText" parent="@android:style/TextAppearance.Theme.Dialog">
 		<item name="android:typeface">sans</item>
-		<item name="android:textSize">16sp</item>
+		<item name="android:textSize">24sp</item>
 		<item name="android:textColor">@color/eink_black</item>
     </style>    
     <style name="ButtonText" parent="@android:style/TextAppearance.Widget.Button">
 		<item name="android:background">@drawable/btn_eink_selector</item>
 		<item name="android:textColor">@color/btn_eink_text_selector</item>
-		<item name="android:textSize">14sp</item>
-		<item name="android:padding">6dip</item>
+		<item name="android:textSize">21sp</item>
+		<item name="android:padding">9dip</item>
 		<item name="android:ellipsize">end</item>
 		<item name="android:lines">1</item>
 		<item name="android:scrollHorizontally">true</item> 
 	</style>
     <style name="InputText" parent="@android:style/TextAppearance.Widget.EditText">
 		<item name="android:textColor">@color/eink_black</item>
+		<item name="android:textSize">24sp</item>
 		<item name="android:background">@drawable/eink_input_box</item>
     </style>   
 	<style name="dPadBtn" parent="@android:style/Widget.Button">
 		<item name="android:background">@drawable/btn_eink_selector</item>
 		<item name="android:textColor">@color/btn_eink_text_selector</item>
 		<item name="android:typeface">monospace</item>
-		<item name="android:textSize">14sp</item>
+		<item name="android:textSize">21sp</item>
 		<item name="android:singleLine">true</item>
 		<item name="android:ellipsize">none</item>
-		<item name="android:layout_width">50dip</item>
-		<item name="android:layout_height">50dip</item>
+		<item name="android:layout_width">75dip</item>
+		<item name="android:layout_height">75dip</item>
 		<item name="android:gravity">center</item>
 	</style>
     <style name="ListText1" parent="@android:style/TextAppearance.Medium">
 		<item name="android:typeface">sans</item>
-		<item name="android:textSize">16sp</item>
+		<item name="android:textSize">24sp</item>
 		<item name="android:textColor">@color/menu_item_text_selector</item>
     </style>
     <style name="ListText2" parent="@android:style/TextAppearance.Medium">
 		<item name="android:typeface">sans</item>
-		<item name="android:textSize">14sp</item>
+		<item name="android:textSize">21sp</item>
 		<item name="android:textColor">@color/menu_item_subtext_selector</item>
 		<item name="android:ellipsize">end</item>
 		<item name="android:maxLines">1</item>

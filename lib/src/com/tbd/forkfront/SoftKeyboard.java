@@ -32,6 +32,7 @@ public class SoftKeyboard implements OnKeyboardActionListener
 
 	private Activity mContext;
 	private ViewGroup mKeyboardFrame;
+	private View mKbdContainer;
 	private KeyboardView mKeyboardView;
 	private Keyboard mSymbolsKeyboard;
 	private Keyboard mQwertyKeyboard;
@@ -49,10 +50,28 @@ public class SoftKeyboard implements OnKeyboardActionListener
 		mCurrent = KEYBOARD.QWERTY;
 
 		mKeyboardFrame = (ViewGroup)mContext.findViewById(R.id.kbd_frame);
+		if(mKeyboardFrame != null)
+			mKeyboardFrame.setVisibility(View.GONE);
 
-		mKeyboardView = (KeyboardView)Util.inflate(mContext, R.layout.input);
-		mKeyboardView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
-		mKeyboardFrame.addView(mKeyboardView);
+		mKbdContainer = Util.inflate(mContext, R.layout.input);
+		mKbdContainer.setVisibility(View.GONE);
+		mKeyboardView = (KeyboardView)mKbdContainer.findViewById(R.id.keyboard);
+		View closeBtn = mKbdContainer.findViewById(R.id.btn_close_kbd);
+		if(closeBtn != null)
+		{
+			closeBtn.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					handleClose();
+				}
+			});
+		}
+
+		mKbdContainer.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
+		if(mKeyboardFrame != null)
+			mKeyboardFrame.addView(mKbdContainer);
 		mKeyboardView.setOnKeyboardActionListener(this);
 	}
 
@@ -81,22 +100,26 @@ public class SoftKeyboard implements OnKeyboardActionListener
 				setKeyboard(KEYBOARD.META);
 			break;
 			}
-			mKeyboardFrame.setVisibility(View.VISIBLE);
+			if(mKeyboardFrame != null)
+				mKeyboardFrame.setVisibility(View.VISIBLE);
+			if(mKbdContainer != null)
+				mKbdContainer.setVisibility(View.VISIBLE);
 		}
 	}
 
 	// ____________________________________________________________________________________
 	public void hide()
 	{
-		if(mQwertyKeyboard != null)
-		{
+		if(mKeyboardView != null)
 			Util.hideKeyboard(mContext, mKeyboardView);
+		if(mKeyboardFrame != null)
 			mKeyboardFrame.setVisibility(View.GONE);
-			mQwertyKeyboard = null;
-			mMetaKeyboard = null;
-			mCtrlKeyboard = null;
-			mSymbolsKeyboard = null;
-		}
+		if(mKbdContainer != null)
+			mKbdContainer.setVisibility(View.GONE);
+		mQwertyKeyboard = null;
+		mMetaKeyboard = null;
+		mCtrlKeyboard = null;
+		mSymbolsKeyboard = null;
 	}
 
 	// ____________________________________________________________________________________

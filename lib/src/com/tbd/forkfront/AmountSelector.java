@@ -171,6 +171,15 @@ public class AmountSelector
 			}
 		});
 
+		mRoot.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				dismiss(-1);
+			}
+		});
+
 		seek.requestFocus();
 		seek.requestFocusFromTouch();
 	}

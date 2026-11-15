@@ -277,6 +277,15 @@ public class NH_GetLine
 				}
 			});
 
+			mRoot.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					cancel();
+				}
+			});
+
 			mState.hideControls();
 			mInput.requestFocus();
 			

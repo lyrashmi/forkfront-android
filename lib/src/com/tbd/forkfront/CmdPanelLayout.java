@@ -223,14 +223,6 @@ public class CmdPanelLayout extends FrameLayout
 				case Gravity.FILL_HORIZONTAL:
 					childLeft = parentLeft;
 					childRight = parentRight;
-					if(child instanceof HorizontalScrollView)
-					{
-						// Don't cover the entire width if it's not needed. The additional space will be used for map input
-						// TODO maybe do this in onMeasure instead
-						int panelW = ((HorizontalScrollView)child).getChildAt(0).getMeasuredWidth();
-						if(panelW < (childRight-childLeft))
-							childRight = childLeft + panelW;
-					}
 				break;
 				default:
 					childLeft = parentLeft + parentRight - childWidth >> 1;
@@ -393,6 +385,20 @@ public class CmdPanelLayout extends FrameLayout
 			forceAddMenu(prefs, editor);
 		}
 
+		boolean forceAddEsc = prefs.getBoolean("forceAddEsc", true);
+		if(forceAddEsc)
+		{
+			editor.putBoolean("forceAddEsc", false);
+			forceAddEsc(prefs, editor);
+		}
+
+		boolean forceAddLoot = prefs.getBoolean("forceAddLoot", true);
+		if(forceAddLoot)
+		{
+			editor.putBoolean("forceAddLoot", false);
+			forceAddLoot(prefs, editor);
+		}
+
 		editor.commit();
 
 		ArrayList<Panel> panelCmds = new ArrayList<Panel>();
@@ -406,7 +412,14 @@ public class CmdPanelLayout extends FrameLayout
 			if(bPortActive || bLandActive)
 			{
 				Panel panel = new Panel();
-				panel.cmds = prefs.getString("pCmdString" + idx, "");
+				String cmds = prefs.getString("pCmdString" + idx, "");
+				if(iPanel == 0 && !(" " + cmds + " ").toLowerCase().contains(" esc "))
+				{
+					cmds = ("ESC " + cmds).trim();
+					editor.putString("pCmdString0", cmds);
+					editor.commit();
+				}
+				panel.cmds = cmds;
 				panel.pLoc = Integer.parseInt(prefs.getString("pPortLoc" + idx, "3"));
 				panel.lLoc = Integer.parseInt(prefs.getString("pLandLoc" + idx, "3"));
 				panel.idx = iPanel;
@@ -445,13 +458,13 @@ public class CmdPanelLayout extends FrameLayout
 						Log.print("Activating panel" + Integer.toString(panel.idx));
 						panel.portScrollView.setVisibility(View.VISIBLE);
 					}
-					panel.panel.attach(panel.portScrollView, panel.portScrollView instanceof HorizontalScrollView);
+					panel.panel.attach(panel.portScrollView, panel.pLoc >= 2);
 				}
 				else
 				{
 					if(mShowPanels && panel.landActive)
 						panel.landScrollView.setVisibility(View.VISIBLE);
-					panel.panel.attach(panel.landScrollView, panel.landScrollView instanceof HorizontalScrollView);
+					panel.panel.attach(panel.landScrollView, panel.lLoc >= 2);
 				}
 			}
 			mPanelCmds = panelCmds;
@@ -523,7 +536,7 @@ public class CmdPanelLayout extends FrameLayout
 		}
 		else
 		{
-			v = new HorizontalScrollView(mContext);
+			v = new FrameLayout(mContext);
 			FrameLayout.LayoutParams params = generateDefaultLayoutParams();
 			params.gravity = (location == 2 ? Gravity.TOP : Gravity.BOTTOM) | Gravity.FILL_HORIZONTAL;
 			params.width = LayoutParams.MATCH_PARENT;
@@ -589,6 +602,65 @@ public class CmdPanelLayout extends FrameLayout
 	}
 
 	// ____________________________________________________________________________________
+	private void forceAddEsc(SharedPreferences prefs, Editor editor)
+	{
+		for(int iPanel = 0; iPanel < MAX_PANELS; iPanel++)
+		{
+			if((" " + prefs.getString("pCmdString" + iPanel, "") + " ").toLowerCase().contains(" esc "))
+				return;
+		}
+
+		for(int iPanel = 0; iPanel < MAX_PANELS; iPanel++)
+		{
+			String idx = Integer.toString(iPanel);
+			boolean bPortActive = prefs.getBoolean("pPortActive" + idx, false);
+			boolean bLandActive = prefs.getBoolean("pLandActive" + idx, false);
+			if(bPortActive || bLandActive)
+			{
+				String cmds = prefs.getString("pCmdString" + idx, "");
+				if(cmds.length() > 0)
+				{
+					cmds = "ESC " + cmds;
+					editor.putString("pCmdString" + idx, cmds);
+					break;
+				}
+			}
+		}
+	}
+
+	// ____________________________________________________________________________________
+	private void forceAddLoot(SharedPreferences prefs, Editor editor)
+	{
+		for(int iPanel = 0; iPanel < MAX_PANELS; iPanel++)
+		{
+			if((" " + prefs.getString("pCmdString" + iPanel, "") + " ").contains(" M-l "))
+				return;
+		}
+
+		for(int iPanel = 0; iPanel < MAX_PANELS; iPanel++)
+		{
+			String idx = Integer.toString(iPanel);
+			boolean bPortActive = prefs.getBoolean("pPortActive" + idx, false);
+			boolean bLandActive = prefs.getBoolean("pLandActive" + idx, false);
+			if(bPortActive || bLandActive)
+			{
+				String cmds = prefs.getString("pCmdString" + idx, "");
+				if(cmds.length() > 0)
+				{
+					if(cmds.contains(" , "))
+						cmds = cmds.replace(" , ", " , M-l ");
+					else if(cmds.contains(" d "))
+						cmds = cmds.replace(" d ", " d M-l ");
+					else
+						cmds = cmds + " M-l";
+					editor.putString("pCmdString" + idx, cmds);
+					break;
+				}
+			}
+		}
+	}
+
+	// ____________________________________________________________________________________
 	public void onCreateContextMenu(ContextMenu menu, View v)
 	{
 		for(Panel p : mPanelCmds)
@@ -619,9 +691,9 @@ public class CmdPanelLayout extends FrameLayout
 			for(Panel p : mPanelCmds)
 			{
 				if(mPortraitMode)
-					p.panel.attach(p.portScrollView, p.portScrollView instanceof HorizontalScrollView);
+					p.panel.attach(p.portScrollView, p.pLoc >= 2);
 				else
-					p.panel.attach(p.landScrollView, p.landScrollView instanceof HorizontalScrollView);
+					p.panel.attach(p.landScrollView, p.lLoc >= 2);
 			}
 		}
 	}

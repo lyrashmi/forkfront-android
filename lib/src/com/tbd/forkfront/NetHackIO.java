@@ -158,17 +158,32 @@ public class NetHackIO
 		mThread.start();
 	}
 
+	private volatile boolean mIsSavingAndExiting = false;
+	private volatile boolean mIsStateSaved = false;
+
+	public void setSavingAndExiting(boolean saving) {
+		mIsSavingAndExiting = saving;
+	}
+
+	public boolean isSavingAndExiting() {
+		return mIsSavingAndExiting;
+	}
+
 	// ____________________________________________________________________________________
 	public void saveState()
 	{
+		if(mIsSavingAndExiting)
+			return;
+		mIsStateSaved = false;
 		mCmdQue.add(new SaveStateCmd());
-		// give it some time
-		for(int i = 0; i < 5; i++)
+		// wait for native thread to complete checkpoint
+		for(int i = 0; i < 20; i++)
 		{
+			if(mIsStateSaved)
+				break;
 			try
 			{
-				Thread.sleep(150);
-				break;
+				Thread.sleep(50);
 			}
 			catch(InterruptedException e)
 			{
@@ -179,24 +194,10 @@ public class NetHackIO
 	// ____________________________________________________________________________________
 	public void saveAndQuit()
 	{
-		// send a few abort commands to cancel ongoing operations
+		mIsSavingAndExiting = true;
+		sendKeyCmd('\033');
+		sendKeyCmd((char) 0x80);
 		sendAbortCmd();
-		sendAbortCmd();
-		sendAbortCmd();
-		sendAbortCmd();
-
-		// give it some time
-		for(int i = 0; i < 5; i++)
-		{
-			try
-			{
-				Thread.sleep(150);
-				break;
-			}
-			catch(InterruptedException e)
-			{
-			}
-		}
 	}
 
 	// ____________________________________________________________________________________
@@ -340,6 +341,7 @@ public class NetHackIO
 		{
 		case SAVE_STATE:
 			SaveNetHackState();
+			mIsStateSaved = true;
 		break;
 		}
 	}

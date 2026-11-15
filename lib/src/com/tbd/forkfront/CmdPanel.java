@@ -26,7 +26,7 @@ public class CmdPanel
 {
 	private Activity mContext;
 	private NH_State mState;
-	private LinearLayout mBtnPanel;
+	private FlowLayout mBtnPanel;
 	private Button mContextView;
 	private int mMinBtnSize;
 	private LayoutParams mParams;
@@ -43,8 +43,8 @@ public class CmdPanel
 		mContext = context;
 		mState = state;
 		mLayout = layout;
-		mBtnPanel = new LinearLayout(context);
-		mBtnPanel.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		mBtnPanel = new FlowLayout(context);
+		mBtnPanel.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		mOpacity = opacity;
 		updateMinButtonSize(relSize);
 		loadCmds(cmds);
@@ -54,7 +54,9 @@ public class CmdPanel
 		final float density = mContext.getResources().getDisplayMetrics().density;
 		mRelSize = relSize;
 		int scale = mRelSize > 0 ? 2 : 1;
-		mMinBtnSize = (int)((50 + scale * mRelSize) * density + 0.5f);
+		mMinBtnSize = (int)((75 + scale * mRelSize) * density + 0.5f);
+		if(mBtnPanel != null)
+			mBtnPanel.setMinItemSize(mMinBtnSize);
 	}
 
 	// ____________________________________________________________________________________
@@ -149,6 +151,11 @@ public class CmdPanel
 	// ____________________________________________________________________________________
 	private Button createCmdButtonFromString(String chars, String label)
 	{
+		// special case for ESC.
+		if(chars.equalsIgnoreCase("esc") || chars.equalsIgnoreCase("escape"))
+		{
+			return createCmdButtonFromCmd(new Cmd.Escape(mState, label));
+		}
 		// special case for keyboard. not very intuitive perhaps
 		if(chars.equalsIgnoreCase("..."))
 		{
@@ -168,13 +175,15 @@ public class CmdPanel
 	private Button createCmdButton()
 	{
 		Button btn = new Button(mContext);
+		final float density = mContext.getResources().getDisplayMetrics().density;
 		btn.setTypeface(Typeface.MONOSPACE);
-		btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+		btn.setPadding((int)(2 * density), 0, (int)(2 * density), 0);
 		btn.setMinimumWidth(mMinBtnSize);
 		btn.setMinimumHeight(0);
 		btn.setLayoutParams(mParams);
 		btn.setFocusable(false);
 		btn.setFocusableInTouchMode(false);
+		btn.setSingleLine(true);
 		btn.setBackgroundResource(R.drawable.btn_eink_selector);
 		btn.setTextColor(mContext.getResources().getColorStateList(R.color.btn_eink_text_selector));
 
@@ -213,8 +222,17 @@ public class CmdPanel
 	private Button createCmdButtonFromCmd(final Cmd cmd)
 	{
 		Button btn = createCmdButton();
-		btn.setText(cmd.toString());
+		String label = cmd.toString();
+		btn.setText(label);
 		btn.setTag(cmd);
+		if(label != null && label.length() >= 3)
+		{
+			btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+		}
+		else
+		{
+			btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+		}
 		if(cmd.hasLabel())
 			btn.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
 
@@ -382,9 +400,9 @@ public class CmdPanel
 				parent.removeView(mBtnPanel);
 			newParent.addView(mBtnPanel);
 			if(bHorizontal)
-				mBtnPanel.setOrientation(LinearLayout.HORIZONTAL);
+				mBtnPanel.setOrientation(FlowLayout.HORIZONTAL);
 			else
-				mBtnPanel.setOrientation(LinearLayout.VERTICAL);
+				mBtnPanel.setOrientation(FlowLayout.VERTICAL);
 		}
 
 	}

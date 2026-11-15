@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import android.os.Handler;
+import android.view.KeyEvent;
 import com.tbd.forkfront.Input.Modifier;
 
 public interface Cmd
@@ -124,6 +125,57 @@ public interface Cmd
 	}
 
 	// ____________________________________________________________________________________
+	class Escape implements Cmd
+	{
+		private NH_State mState;
+		private String mLabel = "ESC";
+
+		// ____________________________________________________________________________________
+		public Escape(NH_State state, String label)
+		{
+			mState = state;
+			if(label != null && label.length() > 0)
+				mLabel = label;
+		}
+
+		// ____________________________________________________________________________________
+		@Override
+		public void execute(ExecuteFinishedHandler handler)
+		{
+			mState.handleKeyDown('\033', '\033', KeyEvent.KEYCODE_ESCAPE, Input.modifiers(), 0, true);
+			handler.onExecuteFinished();
+		}
+
+		// ____________________________________________________________________________________
+		@Override
+		public String toString()
+		{
+			return mLabel;
+		}
+
+		// ____________________________________________________________________________________
+		@Override
+		public boolean hasLabel()
+		{
+			return !mLabel.equals("ESC");
+		}
+
+		// ____________________________________________________________________________________
+		@Override
+		public String getCommand()
+		{
+			return "ESC";
+		}
+
+		// ____________________________________________________________________________________
+		@Override
+		public String getLabel()
+		{
+			return mLabel;
+		}
+	}
+
+	// ____________________________________________________________________________________
 	class KeySequnece implements Cmd
 	{
 		private class KeyCmd
@@ -229,7 +281,7 @@ public interface Cmd
 						i++;
 					}
 				}
-				else if(ch == 'M' && mCommand.length() - i >= 3)
+				else if((ch == 'M' || ch == 'm') && mCommand.length() - i >= 3)
 				{
 					char n = mCommand.charAt(i + 2);
 					if(n != ' ' && mCommand.charAt(i + 1) == '-')

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="5dp"
+    android:background="@color/eink_white">
+
+    <LinearLayout
+        android:id="@+id/settings_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:background="@color/eink_white">
+
+        <Button
+            android:id="@+id/btn_back"
+            style="@style/ButtonText"
+            android:layout_width="wrap_content"
+            android:minWidth="90dp"
+            android:layout_height="wrap_content"
+            android:text="Back" />
+
+        <TextView
+            android:id="@+id/settings_title"
+            style="@style/DialogTitle"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:paddingLeft="12dp"
+            android:singleLine="true"
+            android:text="Settings" />
+
+        <Button
+            android:id="@+id/btn_save_exit"
+            style="@style/ButtonText"
+            android:layout_width="wrap_content"
+            android:minWidth="130dp"
+            android:layout_height="wrap_content"
+            android:text="Save Current Game" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="@color/eink_black" />
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:cacheColorHint="#00000000"
+        android:divider="@color/eink_divider"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/menu_row_selector" />
+
+    <ImageView
+        android:id="@+id/pager_divider"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/eink_black"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/pager_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btn_prev_page"
+            style="@style/ButtonText"
+            android:layout_width="wrap_content"
+            android:minWidth="90dp"
+            android:layout_height="wrap_content"
+            android:text="&#x25c4; Prev" />
+
+        <TextView
+            android:id="@+id/txt_page_num"
+            style="@style/DialogText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Page 1/1" />
+
+        <Button
+            android:id="@+id/btn_next_page"
+            style="@style/ButtonText"
+            android:layout_width="wrap_content"
+            android:minWidth="90dp"
+            android:layout_height="wrap_content"
+            android:text="Next &#x25ba;" />
+    </LinearLayout>
+</LinearLayout>
